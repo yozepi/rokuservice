@@ -9,9 +9,9 @@
   },
   "profiles": {
     "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/values",
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\joe.cleland\\Source\\Repos\\yozepi\\AlexaRoku\\RokuService\\RokuService\\bin\\Debug\\net461\\RokuService.exe",
+      "launchUrl": "api/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

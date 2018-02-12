@@ -1,0 +1,20 @@
+﻿@model IList<RokuService.Services.RokuDefinition>
+@{
+    Layout = "_layout";
+
+    ViewBag.Title = "Home Page";
+}
+<h2>Home Page</h2>
+<table>
+    <tbody>
+        @foreach (var def in this.Model)
+        {
+            var name = def.Name == null ? def.Id : def.Name;
+            <tr>
+                <td>@name</td>
+                <td><a href="@Url.Action("Rename", "Admin", new { id = def.Id })">Change Name</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("AddRoku", "Admin")">Manually add a Roku</a>
