@@ -33,9 +33,13 @@ namespace RokuService
 
             services.AddSingleton<RokuManager>((sp) =>
             {
-                var mgr = new RokuManager(new RokuDiscovery(), sp.GetService<ILogger<RokuManager>>());
-                var junk = mgr.ListRokusAsync(true).Result;
-                return mgr;
+                var logger = sp.GetService<ILogger<RokuManager>>();
+                using (logger.BeginScope("Initialize Service"))
+                {
+                    var mgr = new RokuManager(new RokuDiscovery(), logger);
+                    var junk = mgr.ListRokusAsync(true).Result;
+                    return mgr;
+                }
             });
             services.AddMvc();
         }

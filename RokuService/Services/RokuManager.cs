@@ -65,9 +65,17 @@ namespace RokuService.Services
                     if (def.Roku == null)
                     {
                         def.Roku = await DiscoverRoku(IPAddress.Parse(def.IPAddress));
+                        if (def.Roku == null)
+                        {
+                            Logger.LogWarning("Roku could not be found on the network.");
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogInformation("Roku loaded from cache.");
                     }
                     result = def.Roku;
-                }
+                 }
                 else
                 {
                     Logger.LogWarning("A roku with ID# {id} is not defined.", rokuId);
@@ -135,7 +143,7 @@ namespace RokuService.Services
                 };
                 _rokus[result.Id] = result;
             }
-            Logger.LogTrace("Name: {name}, IP: {ip}", result.Name, result.IPAddress);
+            Logger.LogInformation("Name: {name}, IP: {ip}", result.Name, result.IPAddress);
 
             return result;
         }
@@ -172,7 +180,7 @@ namespace RokuService.Services
                         {
                             _rokus = serializer.ReadObject(s) as Dictionary<string, RokuDefinition>;
                         }
-                        Logger.LogInformation("Loaded {count} roku(s) from file{filename}", _rokus.Count, filename);
+                        Logger.LogInformation("Loaded {count} roku(s) from file {filename}", _rokus.Count, filename);
                         foreach (var value in _rokus.Values)
                         {
                             Logger.LogTrace("Roku #{id}, IP {ip}", value.Id, value.IPAddress);
@@ -186,7 +194,7 @@ namespace RokuService.Services
         {
             string filename = System.IO.Path.Combine(Environment.CurrentDirectory, "rokus.xml");
             var serializer = new DataContractSerializer(typeof(Dictionary<string, RokuDefinition>));
-            Logger.LogInformation("Saving {count} roku(s) to file{filename}", _rokus.Count, filename);
+            Logger.LogInformation("Saving {count} roku(s) to file {filename}", _rokus.Count, filename);
             using (var s = File.Create(filename))
             {
                 serializer.WriteObject(s, _rokus);
