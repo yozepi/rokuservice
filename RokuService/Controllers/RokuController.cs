@@ -106,6 +106,10 @@ namespace RokuService.Controllers
         {
             using (Logger.BeginScope("api->LaunchApp"))
             {
+                if(string.IsNullOrEmpty(filter))
+                {
+                    return ErrorResponse("filter is required.", "NoFilter", HttpStatusCode.BadRequest);
+                }
                 return await LaunchApp(rokuId, (roku) => FilteredAppList(roku, filter));
             }
         }
@@ -222,6 +226,41 @@ namespace RokuService.Controllers
                     await Task.Delay(pause);
                 }
                 return Ok();
+            }
+        }
+
+        [HttpGet]
+        [Route("{rokuId}/search")]
+        public async Task<IActionResult> Search([FromRoute] string rokuId, [FromQuery] string text)
+        {
+            using (Logger.BeginScope("api->Search"))
+            {
+                var roku = await Manager.GetRokuAsync(rokuId);
+                if (roku == null)
+                    return RokuNotFoundResult(rokuId);
+
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    return ErrorResponse("text is required.", HttpStatusCode.BadRequest);
+                }
+
+
+                Logger.LogInformation("Searching for: \"{text}\".", text);
+                Logger.LogInformation("Roku Endpoint: {ep}", roku.Url);
+
+                try
+                {
+                    var rokuResult = await roku.SearchAsync(text);
+                    if (rokuResult.IsSuccess)
+                        return Json(rokuResult);
+
+                    return RokuErrorResponse(rokuResult);
+                }
+                catch (Exception ex)
+                {
+                    return LogAndReturnException(ex);
+                }
             }
         }
 
